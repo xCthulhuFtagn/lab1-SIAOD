@@ -43,7 +43,7 @@ void BellmanFord(const vector<vector<double>>& graph, unsigned start, unsigned e
         }
         x.pop();
     }
-    if (dp[end] >= 0){
+    if (dp[end] >= 0 && !isinf(dp[end])){
         cout << "Length of the shortest way: " << dp[end] << endl;
         gen(n, graph, start, end, dp[end]);
     }
@@ -81,9 +81,12 @@ void Prima(const vector<vector<double>>& graph) {
             }
         }
     }
+    double ans = 0;
     for (unsigned i = 1; i < sel_e.size(); ++i) {
-        cout << sel_e[i] << " <-> " << i << endl;
+        cout << sel_e[i] + 1 << " <-> " << i + 1 << endl;
+        ans += min_e[i];
     }
+    cout << "Weight of tree: " << ans << endl;
 }
 
 int main()
@@ -100,19 +103,35 @@ int main()
         return -1;
     }
     vector<vector<double>> matrix(size, vector<double>(size));
-    cout << "Enter adjacency matrix:" << endl;
-    for (unsigned i = 0; i < size; ++i) {
-        for (unsigned j = 0; j < size; ++j) {
-            try {
-                cin >> matrix[i][j];
-                if (!cin) throw exception("Wrong format in one of vertices!");
-            }
-            catch (exception& bad) {
-                cout << bad.what() << endl;
-                return -2;
-            }
+    for (auto& i : matrix)
+        for (double& x : i)
+            x = INFINITY;
+    for (unsigned i = 0; i < size; ++i)
+        matrix[i][i] = 0;
+    cout << "Enter quantity of edges: ";
+    try {
+        cin >> size;
+        if (!cin) throw exception("Wrong format in number of vertices!");
+    }
+    catch (exception& bad) {
+        cout << bad.what() << endl;
+        return -1;
+    }
+    cout << "Enter edges:" << endl;
+    for (unsigned i = 0; i < size; ++i){
+        unsigned j, k;
+        double weight;
+        try {
+            cin >> j >> k >> weight;
+            matrix[j - 1][k - 1] = weight;
+            if (!cin) throw exception("Wrong format in one of vertices!");
+        }
+        catch (exception& bad) {
+            cout << bad.what() << endl;
+            return -2;
         }
     }
+    size = matrix.size();
     try {
         cout << "Enter start and end: ";
         cin >> start >> end;
@@ -126,13 +145,12 @@ int main()
     BellmanFord(matrix, start, end);
     for (unsigned i = 0; i < size; ++i) {
         for(unsigned j = 0; j <= i; ++j){
-            if (matrix[i][j] != 0) {
+            if (!isinf(matrix[i][j])) {
                 matrix[j][i] = matrix[i][j];
             }
-            else if (matrix[j][i] != 0) {
+            else if (!isinf(matrix[j][i])) {
                 matrix[i][j] = matrix[j][i];
-            }
-            else {
+            } else {
                 matrix[i][j] = INFINITY;
                 matrix[j][i] = INFINITY;
             }
@@ -149,3 +167,37 @@ int main()
     cout << endl;
     Prima(matrix);
 }
+
+/*
+12
+0 2 3 23 45 6 2 3 0 3 2 4
+0 0 3 23 45 6 2 3 0 3 2 5
+0 2 0 23 45 6 2 3 0 3 2 5
+0 2 3 0 45 61 2 0 3 2 43 5
+0 2 3 53 0 9 2 3 0 2 44 5
+0 2 3 3 8 0 2 3 0 3 62 5
+0 2 3 3 4 5 0 3 0 3 2 5
+0 2 3 23 5 6 2 0 0 34 2 5
+0 8 3 12 45 6 2 3 0 3 4 5
+0 0 3 21 45 6 2 3 0 0 4 5
+0 1 3 25 45 6 2 3 0 0 4 5
+7 58 3 3 4 4 3 8 99 9 9 0
+*/
+
+/*
+14
+1 4 3
+1 5 2
+2 5 2
+5 10 3
+4 8 2
+4 9 7
+9 12 1
+8 11 4
+10 12 2
+10 13 1
+6 13 5
+6 7 3
+3 7 2
+2 6 4
+*/
