@@ -6,8 +6,9 @@
 #include <list>
 #include <map>
 #include <fstream>
-#include <exception>
+#include <stdexcept>
 #include <algorithm>
+#include <string>
 
 using namespace std;
 
@@ -120,14 +121,14 @@ int main()
     }
     unsigned choice;
     try {
-        cout << "Select algorithm:" << endl;
+        cout << "Select algorithm for graph with " << size << " vertices:" << endl;
         cout << "1) Bellman-Ford" << endl;
         cout << "2) Prima" << endl;
         cin >> choice;
-        if (!cin || choice == 0 || choice > 2) throw("Wrong selection format!");
+        if (!cin || choice == 0 || choice > 2) throw invalid_argument("Wrong selection format!");
     }
-    catch (string& bad) {
-        cout << bad << endl;
+    catch (exception& bad) {
+        cout << bad.what() << endl;
         return -2;
     }
     if (choice == 2) goto PRIMA;
@@ -135,10 +136,10 @@ int main()
         cout << "Enter start and end: ";
         cin >> start >> end;
         --start; --end;
-        if (!cin || start >= size || end >= size) throw("Wrong start/end format!");
+        if (!cin || start >= size || end >= size) throw invalid_argument("Wrong start/end format!");
     }
-    catch (string& bad) {
-        cout << bad << endl;
+    catch (exception& bad) {
+        cout << bad.what() << endl;
         return -2;
     }
     BellmanFord(matrix, start, end);
