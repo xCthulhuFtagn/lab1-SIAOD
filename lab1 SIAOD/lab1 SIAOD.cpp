@@ -131,7 +131,13 @@ int main()
         cout << bad.what() << endl;
         return -2;
     }
-    if (choice == 2) goto PRIMA;
+    if (choice == 2) {
+        for (unsigned i = 0; i < tmp_vec.size(); ++i) {
+            matrix[tmp_vec[i].j][tmp_vec[i].i] = tmp_vec[i].weight;
+        }
+        Prima(matrix);
+        return 0;
+    }
     try {
         cout << "Enter start and end: ";
         cin >> start >> end;
@@ -143,12 +149,6 @@ int main()
         return -2;
     }
     BellmanFord(matrix, start, end);
-    return 0;
-PRIMA:
-    for (unsigned i = 0; i < tmp_vec.size(); ++i) {
-        matrix[tmp_vec[i].j][tmp_vec[i].i] = tmp_vec[i].weight;
-    }
-    Prima(matrix);
     return 0;
 }
 
